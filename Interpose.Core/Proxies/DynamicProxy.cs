@@ -34,7 +34,8 @@ namespace Interpose.Core.Proxies
 		public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
 		{
 			var method = this.Target.GetType().GetMethod(binder.Name);
-			var arg = new InterceptionArgs(this.Target, method, args);
+            Func<object> handler = () => { return method.Invoke(this.Target, args); };
+			var arg = new InterceptionArgs(this.Target, method, handler, args);
 
 			this.handler.Invoke(arg);
 

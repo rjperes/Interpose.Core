@@ -283,32 +283,28 @@ namespace Interpose.Core.Generators
                         builder.AppendFormat("var self = ({0}) this.target;\r\n", method.DeclaringType.FullName);
                     }
 
-                    builder.Append("var currentMethod = (System.Reflection.MethodInfo) System.Reflection.MethodBase.GetCurrentMethod();\r\n");
-                    //TODO: support overloads
-                    builder.Append("var originalMethod = self.GetType().GetMethod(currentMethod.Name);\r\n");
                     builder.AppendFormat("{0} args = null;\r\n", typeof(InterceptionArgs).FullName);
 
                     if (isSet == true)
                     {
-
                         if (isInterface == true)
                         {
-                            builder.AppendFormat("args = new {0}(self, originalMethod, new object [] {{ value }});\r\n", typeof(InterceptionArgs).FullName);
+                            builder.AppendFormat("args = new {0}(self, (System.Reflection.MethodInfo) System.Reflection.MethodBase.GetCurrentMethod(), () => {{ return self.{1} = value; }}, new object [] {{ value }});\r\n", typeof(InterceptionArgs).FullName, prop.Name);
                         }
                         else
                         {
-                            builder.AppendFormat("args = new {0}(self, () => {{ return base.{1} = value; }}, new object [] {{ value }});\r\n", typeof(InterceptionArgs).FullName, prop.Name);
+                            builder.AppendFormat("args = new {0}(self, (System.Reflection.MethodInfo) System.Reflection.MethodBase.GetCurrentMethod(), () => {{ return base.{1} = value; }}, new object [] {{ value }});\r\n", typeof(InterceptionArgs).FullName, prop.Name);
                         }
                     }
                     else
                     {
                         if (isInterface == true)
                         {
-                            builder.AppendFormat("args = new {0}(self, originalMethod, new object [] {{ }});\r\n", typeof(InterceptionArgs).FullName);
+                            builder.AppendFormat("args = new {0}(self, (System.Reflection.MethodInfo) System.Reflection.MethodBase.GetCurrentMethod(), () => {{ return self.{1}; }}, new object [] {{ }});\r\n", typeof(InterceptionArgs).FullName, prop.Name);
                         }
                         else
                         {
-                            builder.AppendFormat("args = new {0}(self, () => {{ return args.Result = base.{1}; }} , new object [] {{ }});\r\n", typeof(InterceptionArgs).FullName, prop.Name);
+                            builder.AppendFormat("args = new {0}(self, (System.Reflection.MethodInfo) System.Reflection.MethodBase.GetCurrentMethod(), () => {{ return base.{1}; }} , new object [] {{ }});\r\n", typeof(InterceptionArgs).FullName, prop.Name);
                         }
                     }
 
@@ -363,17 +359,29 @@ namespace Interpose.Core.Generators
                     builder.AppendFormat("var self = ({0}) this.target;\r\n", method.DeclaringType.FullName);
                 }
 
-                builder.Append("var currentMethod = (System.Reflection.MethodInfo) System.Reflection.MethodBase.GetCurrentMethod();\r\n");
-                //TODO: support overloads
-                builder.Append("var originalMethod = self.GetType().GetMethod(currentMethod.Name);\r\n");
+                builder.AppendFormat("{0} args = null;\r\n", typeof(InterceptionArgs).FullName);
 
                 if (isInterface == true)
                 {
-                    builder.AppendFormat("var args = new {0}(self, originalMethod, new object [] {{ {1} }});\r\n", typeof(InterceptionArgs).FullName, string.Join(", ", method.GetParameters().Select(x => x.Name)));
+                    if (method.ReturnType != typeof(void))
+                    {
+                        builder.AppendFormat("args = new {0}(self, (System.Reflection.MethodInfo) System.Reflection.MethodBase.GetCurrentMethod(), () => {{ return self.{1}({2}); }}, new object [] {{ {2} }});\r\n", typeof(InterceptionArgs).FullName, method.Name, string.Join(", ", method.GetParameters().Select(x => x.Name)));
+                    }
+                    else
+                    {
+                        builder.AppendFormat("args = new {0}(self, (System.Reflection.MethodInfo) System.Reflection.MethodBase.GetCurrentMethod(), () => {{ self.{1}({2}); return null; }}, new object [] {{ {2} }});\r\n", typeof(InterceptionArgs).FullName, method.Name, string.Join(", ", method.GetParameters().Select(x => x.Name)));
+                    }
                 }
                 else
                 {
-                    builder.AppendFormat("var args = new {0}(self, () => {{ return base.{1}({2}); }}, new object [] {{ {2} }});\r\n", typeof(InterceptionArgs).FullName, method.Name, string.Join(", ", method.GetParameters().Select(x => x.Name)));
+                    if (method.ReturnType != typeof(void))
+                    {
+                        builder.AppendFormat("args = new {0}(self, (System.Reflection.MethodInfo) System.Reflection.MethodBase.GetCurrentMethod(), () => {{ return base.{1}({2}); }}, new object [] {{ {2} }});\r\n", typeof(InterceptionArgs).FullName, method.Name, string.Join(", ", method.GetParameters().Select(x => x.Name)));
+                    }
+                    else
+                    {
+                        builder.AppendFormat("args = new {0}(self, (System.Reflection.MethodInfo) System.Reflection.MethodBase.GetCurrentMethod(), () => {{ base.{1}({2}); return null; }}, new object [] {{ {2} }});\r\n", typeof(InterceptionArgs).FullName, method.Name, string.Join(", ", method.GetParameters().Select(x => x.Name)));
+                    }
                 }
 
                 builder.Append("this.handler.Invoke(args);\r\n");

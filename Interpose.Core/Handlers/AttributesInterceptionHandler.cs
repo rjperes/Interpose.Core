@@ -10,7 +10,7 @@ namespace Interpose.Core.Handlers
 
 		public void Invoke(InterceptionArgs arg)
 		{
-			var attrs = arg.Method.GetCustomAttributes(true).OfType<InterceptionAttribute>().OrderBy(x => x.Order);
+			var attrs = arg.Target.GetType().GetCustomAttributes(true).OfType<InterceptionAttribute>().OrderBy(x => x.Order);
 
 			foreach (var attr in attrs)
 			{
