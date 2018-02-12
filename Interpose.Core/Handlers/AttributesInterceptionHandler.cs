@@ -1,4 +1,5 @@
 ﻿using Interpose.Core.Interceptors;
+using System;
 using System.Linq;
 
 namespace Interpose.Core.Handlers
@@ -9,11 +10,21 @@ namespace Interpose.Core.Handlers
 
 		public void Invoke(InterceptionArgs arg)
 		{
-			var attrs = arg.Method.GetCustomAttributes(true).OfType<InterceptionAttribute>().OrderBy(x => x.Order).Cast<IInterceptionHandler>();
+			var attrs = arg.Method.GetCustomAttributes(true).OfType<InterceptionAttribute>().OrderBy(x => x.Order);
 
 			foreach (var attr in attrs)
 			{
-				attr.Invoke(arg);
+				var handlerType = attr.InterceptionHandlerType;
+
+				if (handlerType != null)
+				{
+					var handler = Activator.CreateInstance(handlerType) as IInterceptionHandler;
+
+					if (handler != null)
+					{
+						handler.Invoke(arg);
+					}
+				}
 			}
 		}
 	}

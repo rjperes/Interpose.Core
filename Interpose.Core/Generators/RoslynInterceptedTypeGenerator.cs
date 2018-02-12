@@ -94,7 +94,7 @@ namespace Interpose.Core.Generators
 
             if (isInterface == true)
             {
-                builder.AppendFormat("public {0}({1} interceptor, {2} handler, object instance): base(interceptor, handler, instance) {{ }}\r\n", typeName, typeof(IInterceptor).FullName, typeof(IInterceptionHandler).FullName);
+                builder.AppendFormat("public {0}({1} interceptor, {2} handler, object target): base(interceptor, handler, target) {{ }}\r\n", typeName, typeof(IInterceptor).FullName, typeof(IInterceptionHandler).FullName);
             }
 
         }
@@ -120,7 +120,7 @@ namespace Interpose.Core.Generators
             {
                 if (additionalInterfaceTypes.Any(x => x.IsInterface == false))
                 {
-                    throw new ArgumentException("The target interface is missing");
+                    throw new ArgumentNullException("The target interface is missing", nameof(additionalInterfaceTypes));
                 }
             }
 
@@ -142,32 +142,7 @@ namespace Interpose.Core.Generators
 
             builder.AppendFormat("namespace {0} {{\r\n", baseType.Namespace);
 
-            builder.AppendFormat("public class {0} : {1} ", typeName, baseType.Name);
-
-            if (isInterface == true)
-            {
-                builder.AppendFormat(", {0} ", typeof(IInterceptionProxy).FullName);
-            }
-
-            foreach (var additionalInterfaceType in additionalInterfaceTypes)
-            {
-                builder.AppendFormat(", {0} ", additionalInterfaceType.FullName);
-            }
-
-            builder.Append("{\r\n");
-
-            if (isInterface == true)
-            {
-                builder.AppendFormat("{0} {1}.{2} {{ get {{ return this.interceptor; }} }}\r\n", typeof(IInterceptor).FullName, typeof(IInterceptionProxy).FullName, nameof(IInterceptionProxy.Interceptor));
-            }
-            
-            if (isInterface == false)
-            {
-                if (handlerType != null)
-                {
-                    builder.AppendFormat("private {0} handler = new {1}();\r\n", typeof(IInterceptionHandler).FullName, handlerType.FullName);
-                }
-            }
+            this.BuildClass(builder, typeName, baseType, additionalInterfaceTypes, handlerType);
 
             this.BuildConstructors(baseType, typeName, builder, isInterface);
 
@@ -225,6 +200,39 @@ namespace Interpose.Core.Generators
             }
         }
 
+        private void BuildClass(StringBuilder builder, string typeName, Type baseType, Type[] additionalInterfaceTypes, Type handlerType)
+        {
+            var isInterface = (baseType == interfaceProxyType);
+
+            builder.AppendFormat("public class {0} : {1} ", typeName, baseType.Name);
+
+            if (isInterface == true)
+            {
+                builder.AppendFormat(", {0} ", typeof(IInterceptionProxy).FullName);
+            }
+
+            foreach (var additionalInterfaceType in additionalInterfaceTypes)
+            {
+                builder.AppendFormat(", {0} ", additionalInterfaceType.FullName);
+            }
+
+            builder.Append("{\r\n");
+
+            if (isInterface == true)
+            {
+                builder.AppendFormat("{0} {1}.{2} {{ get {{ return this.interceptor; }} }}\r\n", typeof(IInterceptor).FullName, typeof(IInterceptionProxy).FullName, nameof(IInterceptionProxy.Interceptor));
+                builder.AppendFormat("object {0}.{1} {{ get {{ return this.target; }} }}\r\n", typeof(IInterceptionProxy).FullName, nameof(IInterceptionProxy.Target));
+            }
+
+            if (isInterface == false)
+            {
+                if (handlerType != null)
+                {
+                    builder.AppendFormat("private {0} handler = new {1}();\r\n", typeof(IInterceptionHandler).FullName, handlerType.FullName);
+                }
+            }
+        }
+
         private void BuildProperties(Type baseType, Type[] additionalInterfaceTypes, StringBuilder builder, bool isInterface)
         {
             var properties = this.GetProperties(baseType, additionalInterfaceTypes);
@@ -272,7 +280,7 @@ namespace Interpose.Core.Generators
                     else
                     {
                         //interface
-                        builder.AppendFormat("var self = ({0}) this.instance;\r\n", method.DeclaringType.FullName);
+                        builder.AppendFormat("var self = ({0}) this.target;\r\n", method.DeclaringType.FullName);
                     }
 
                     builder.Append("var currentMethod = (System.Reflection.MethodInfo) System.Reflection.MethodBase.GetCurrentMethod();\r\n");
@@ -352,12 +360,12 @@ namespace Interpose.Core.Generators
                 else
                 {
                     //interface
-                    builder.AppendFormat("var self = ({0}) this.instance;\r\n", method.DeclaringType.FullName);
+                    builder.AppendFormat("var self = ({0}) this.target;\r\n", method.DeclaringType.FullName);
                 }
 
-                builder.Append("var currentMethod = (System.Reflection.MethodInfo) System.Reflection.MethodBase.GetCurrentMethod();");
+                builder.Append("var currentMethod = (System.Reflection.MethodInfo) System.Reflection.MethodBase.GetCurrentMethod();\r\n");
                 //TODO: support overloads
-                builder.Append("var originalMethod = self.GetType().GetMethod(currentMethod.Name);");
+                builder.Append("var originalMethod = self.GetType().GetMethod(currentMethod.Name);\r\n");
 
                 if (isInterface == true)
                 {

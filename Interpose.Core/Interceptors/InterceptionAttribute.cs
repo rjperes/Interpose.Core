@@ -1,14 +1,18 @@
-﻿using Interpose.Core.Handlers;
-using System;
+﻿using System;
 
 namespace Interpose.Core.Interceptors
 {
 	[Serializable]
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, AllowMultiple = true, Inherited = true)]
-	public abstract class InterceptionAttribute : Attribute, IInterceptionHandler
+	public class InterceptionAttribute : Attribute
 	{
+        public InterceptionAttribute(Type interceptionHandlerType)
+        {
+            this.InterceptionHandlerType = interceptionHandlerType;
+        }
+
 		public int Order { get; set; }
 
-		public abstract void Invoke(InterceptionArgs arg);
+        public Type InterceptionHandlerType { get; }
 	}
 }

@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/Interpose.Core/v15
+/Interpose.Core.Tests/obj
+/Interpose.Core.Tests/bin/Debug/netcoreapp2.0
+/Interpose.Core/obj
+/Interpose.Core/bin/Debug/netcoreapp2.0

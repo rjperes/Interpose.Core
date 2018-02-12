@@ -1,13 +1,11 @@
 ﻿using Interpose.Core.Interceptors;
-using System;
 
 namespace Interpose.Core.Tests
 {
-	public class ConsoleLogInterceptionAttribute : InterceptionAttribute
+    public class ConsoleLogInterceptionAttribute : InterceptionAttribute
 	{
-		public override void Invoke(InterceptionArgs arg)
+		public ConsoleLogInterceptionAttribute() : base(typeof(ConsoleInterceptionHandler))
 		{
-			Console.Out.WriteLine("Calling " + arg.Method);
 		}
 	}
 }

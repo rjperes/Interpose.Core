@@ -5,13 +5,13 @@ namespace Interpose.Core.Proxies
 {
 	public abstract class InterfaceProxy
 	{
-		protected readonly object instance;
+		protected readonly object target;
 		protected readonly IInterceptor interceptor;
 		protected readonly IInterceptionHandler handler;
 
-		protected InterfaceProxy(IInterceptor interceptor, IInterceptionHandler handler, object instance)
+		protected InterfaceProxy(IInterceptor interceptor, IInterceptionHandler handler, object target)
 		{
-			this.instance = instance;
+			this.target = target;
 			this.interceptor = interceptor;
 			this.handler = handler;
 		}

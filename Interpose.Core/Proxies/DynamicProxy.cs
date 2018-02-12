@@ -8,34 +8,33 @@ namespace Interpose.Core.Proxies
 	internal sealed class DynamicProxy : DynamicObject, IInterceptionProxy
 	{
 		private readonly IInterceptionHandler handler;
-		private readonly object target;
 
 		public DynamicProxy(IInterceptor interceptor, object target, IInterceptionHandler handler)
 		{
 			if (interceptor == null)
 			{
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException(nameof(interceptor));
 			}
 
 			if (target == null)
 			{
-				throw new ArgumentNullException("target");
+				throw new ArgumentNullException(nameof(target));
 			}
 
 			if (handler == null)
 			{
-				throw new ArgumentNullException("handler");
+				throw new ArgumentNullException(nameof(handler));
 			}
 
 			this.Interceptor = interceptor;
-			this.target = target;
+			this.Target = target;
 			this.handler = handler;
 		}
 
 		public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
 		{
-			var method = this.target.GetType().GetMethod(binder.Name);
-			var arg = new InterceptionArgs(this.target, method, args);
+			var method = this.Target.GetType().GetMethod(binder.Name);
+			var arg = new InterceptionArgs(this.Target, method, args);
 
 			this.handler.Invoke(arg);
 
@@ -45,12 +44,13 @@ namespace Interpose.Core.Proxies
 			}
 			else
 			{
-				result = method.Invoke(this.target, args);
+				result = method.Invoke(this.Target, args);
 			}
 
 			return true;
 		}
 
-		public IInterceptor Interceptor { get; private set; }
-	}
+		public IInterceptor Interceptor { get; }
+        public object Target { get; }
+    }
 }

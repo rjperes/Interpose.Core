@@ -65,7 +65,7 @@ namespace Interpose.Core.Handlers
 				}
 			}
 
-			throw new ArgumentException("Expression is not a method call", "method");
+			throw new ArgumentException("Expression is not a method call", nameof(expression));
 		}
 
 		public RegistryInterceptionHandler Register<T>(Expression<Func<T, object>> method, IInterceptionHandler handler)

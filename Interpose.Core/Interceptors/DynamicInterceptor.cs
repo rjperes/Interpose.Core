@@ -8,9 +8,9 @@ namespace Interpose.Core.Interceptors
 	{
 		public static readonly IInstanceInterceptor Instance = new DynamicInterceptor();
 
-		public object Intercept(object instance, Type typeToIntercept, IInterceptionHandler handler)
+		public object Intercept(object target, Type typeToIntercept, IInterceptionHandler handler)
 		{
-			return new DynamicProxy(this, instance, handler);
+			return new DynamicProxy(this, target, handler);
 		}
 
 		public bool CanIntercept(object instance)

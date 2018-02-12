@@ -8,14 +8,14 @@ namespace Interpose.Core.Interceptors
 	{
 		private object result;
 
-        public InterceptionArgs(object instance, Func<object> baseMethod, object[] arguments): this(instance, (MethodInfo) null, arguments)
+        public InterceptionArgs(object target, Func<object> baseMethod, object[] arguments): this(target, (MethodInfo) null, arguments)
         {
             this.BaseMethod = baseMethod;
         }
 
-        public InterceptionArgs(object instance, MethodInfo method, object[] arguments)
+        public InterceptionArgs(object target, MethodInfo method, object[] arguments)
 		{
-			this.Instance = instance;
+			this.Target = target;
 			this.Method = method;
 			this.Arguments = arguments;
 		}
@@ -28,11 +28,11 @@ namespace Interpose.Core.Interceptors
             }
             else
             {
-                this.Result = this.Method.Invoke(this.Instance, this.Arguments);
+                this.Result = this.Method.Invoke(this.Target, this.Arguments);
             }
 		}
 
-		public object Instance { get; }
+		public object Target { get; }
 		public MethodInfo Method { get; }
 		public object[] Arguments { get; }
 		public bool Handled { get; set; }

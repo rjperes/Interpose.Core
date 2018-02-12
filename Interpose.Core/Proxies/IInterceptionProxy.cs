@@ -5,9 +5,7 @@ namespace Interpose.Core.Proxies
 {
 	public interface IInterceptionProxy
 	{
-		IInterceptor Interceptor
-		{
-			get;
-		}
+		IInterceptor Interceptor { get; }
+		object Target { get; }
 	}
 }
