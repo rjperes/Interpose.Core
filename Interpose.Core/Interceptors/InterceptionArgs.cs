@@ -3,7 +3,6 @@ using System.Reflection;
 
 namespace Interpose.Core.Interceptors
 {
-    [Serializable]
     public sealed class InterceptionArgs : EventArgs
     {
         private object result;
