@@ -12,12 +12,12 @@ namespace Interpose.Core.Handlers
 		{
 			if (condition == null)
 			{
-				throw new ArgumentNullException("condition");
+				throw new ArgumentNullException(nameof(condition));
 			}
 
 			if (handler == null)
 			{
-				throw new ArgumentNullException("handler");
+				throw new ArgumentNullException(nameof(handler));
 			}
 
 			this.condition = condition;

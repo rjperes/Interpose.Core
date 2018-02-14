@@ -24,12 +24,12 @@ namespace Interpose.Core.Handlers
 		{
 			if (method == null)
 			{
-				throw new ArgumentNullException("method");
+				throw new ArgumentNullException(nameof(method));
 			}
 
 			if (handler == null)
 			{
-				throw new ArgumentNullException("handler");
+				throw new ArgumentNullException(nameof(handler));
 			}
 
 			this.handlers[method] = handler;

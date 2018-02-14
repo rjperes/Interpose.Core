@@ -8,3 +8,5 @@
 /Interpose.Core/obj
 /Interpose.Core/bin/Debug/netcoreapp2.0
 /Interpose.Core/bin
+/Interpose.Core.Tests/bin/Release/netcoreapp2.0
+/Interpose.Core/build-nuget.cmd
