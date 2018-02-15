@@ -1,6 +1,7 @@
 ﻿using Interpose.Core.Handlers;
 using Interpose.Core.Interceptors;
 using Interpose.Core.Proxies;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xunit;
 
@@ -8,45 +9,80 @@ namespace Interpose.Core.Tests
 {
 	public class InterceptionTests
 	{
-		[Fact]
-		public void CanDoDynamicInterception()
-		{
-			//Dynamic interceptor
-			var instance = new MyType();
-			var interceptor = new DynamicInterceptor();
-			var handler = new MyHandler();
-			var canIntercept = interceptor.CanIntercept(instance);
-			dynamic myProxy = interceptor.Intercept(instance, null, handler);
-			var proxy = myProxy as IInterceptionProxy;
-			var otherInterceptor = proxy.Interceptor;   //same as interceptor
-			var target = proxy.Target;                  //same as instance
-			int result = myProxy.MyMethod();
-			Assert.Equal(20, result);
-		}
+        [Fact]
+        public void CanUseDependencyInjection()
+        {
+            var services = new ServiceCollection();
+            services.AddInterfaceInterceptor();
+            services.AddVirtualMethodInterceptor();
+            services.AddDynamicInterceptor();
 
-		[Fact]
-		public void CanDoInterfaceInterception()
-		{
-			//Interface interceptor
-			var instance = new MyType();
-			var type = typeof(IMyType);
-			var interceptor = new InterfaceInterceptor();
-			var handler = new MyHandler();
-			var canIntercept = interceptor.CanIntercept(instance);
-			var myProxy = interceptor.Intercept(instance, type, handler) as IMyType;
-			var proxy = myProxy as IInterceptionProxy;
-			var otherInterceptor = proxy.Interceptor;   //same as interceptor
-			var target = proxy.Target;                  //same as instance
-			var result = myProxy.MyMethod();
-			Assert.Equal(20, result);
-		}
+            var serviceProvider = services.BuildServiceProvider();
+
+            var typeInterceptors = serviceProvider.GetServices<ITypeInterceptor>();
+            var instanceInterceptors = serviceProvider.GetServices<IInstanceInterceptor>();
+
+            Assert.NotEmpty(typeInterceptors);
+            Assert.NotEmpty(instanceInterceptors);
+        }
+
+        private object InstanceInterception(IInstanceInterceptor interceptor, object instance, IInterceptionHandler handler)
+        {
+            var canIntercept = interceptor.CanIntercept(instance);
+
+            Assert.True(canIntercept);
+
+            var proxy = interceptor.Intercept(instance, handler);
+
+            var interceptionProxy = proxy as IInterceptionProxy;
+
+            Assert.NotNull(interceptionProxy);
+
+            var otherInterceptor = interceptionProxy.Interceptor;
+
+            Assert.Equal(otherInterceptor, interceptor);
+
+            var target = interceptionProxy.Target;
+
+            Assert.Equal(target, instance);
+
+            return proxy;
+        }
+
+        [Fact]
+        public void CanDoDynamicInterception()
+        {
+            var instance = new MyType();
+            var interceptor = new DynamicInterceptor();
+            var handler = new ModifyResultHandler();
+
+            dynamic proxy = this.InstanceInterception(interceptor, instance, handler);
+
+            var result = proxy.MyMethod();
+
+            Assert.Equal(20, result);
+        }
+
+        [Fact]
+        public void CanDoInterfaceInterception()
+        {
+            var instance = new MyType();
+            var interceptor = new InterfaceInterceptor();
+            var handler = new ModifyResultHandler();
+
+            var proxy = this.InstanceInterception(interceptor, instance, handler) as IMyType;
+
+            var result = proxy.MyMethod();
+
+            Assert.Equal(20, result);
+        }
 
 		[Fact]
 		public void CanDoVirtualInterception()
 		{
 			//Virtual method interceptor
 			var type = typeof(MyType);
-			var handlerType = typeof(MyHandler);
+			var handlerType = typeof(ModifyResultHandler);
 			var interceptor = new VirtualMethodInterceptor();
 			var canIntercept = interceptor.CanIntercept(type);
 			var myProxyType = interceptor.Intercept(type, handlerType);
@@ -61,8 +97,9 @@ namespace Interpose.Core.Tests
 			//interception through attributes
 			var instance = new MyType3();
 			dynamic myProxy = DynamicInterceptor.Instance.InterceptWithAttributes(instance);
-			myProxy.MyMethod();
-		}
+            var result = myProxy.MyMethod();
+            Assert.Equal(20, result);
+        }
 
 		[Fact]
 		public void CanDoDynamicInterceptionWithRegistry()
@@ -70,11 +107,12 @@ namespace Interpose.Core.Tests
 			//interception through a registry
 			var instance = new MyType3();
 			var interceptor = new DynamicInterceptor();
-			var registry = new RegistryInterceptionHandler();
-			registry.Register<IMyType>(x => x.MyProperty, new MyHandler());
-			registry.Register<IMyType>(x => x.MyMethod(), new MyHandler());
-			dynamic myProxy = interceptor.Intercept(instance, null, registry);
-			myProxy.MyMethod();
-		}
+			var registry = new RegistryInterceptionHandler()
+			    .Register<MyType3>(x => x.MyProperty, new ModifyResultHandler())
+			    .Register<MyType3>(x => x.MyMethod(), new ModifyResultHandler());
+			dynamic myProxy = interceptor.Intercept(instance, typeof(IMyType), registry);
+            var result = myProxy.MyMethod();
+            Assert.Equal(20, result);
+        }
 	}
 }

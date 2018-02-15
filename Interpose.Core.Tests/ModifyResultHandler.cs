@@ -3,7 +3,7 @@ using Interpose.Core.Interceptors;
 
 namespace Interpose.Core.Tests
 {
-	public class MyHandler : IInterceptionHandler
+	public class ModifyResultHandler : IInterceptionHandler
 	{
 		public void Invoke(InterceptionArgs arg)
 		{

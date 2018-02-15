@@ -4,6 +4,9 @@ using System;
 
 namespace Interpose.Core.Interceptors
 {
+    /// <summary>
+    /// Intercepts non-sealed classes with virtual methods.
+    /// </summary>
 	public sealed class VirtualMethodInterceptor : ITypeInterceptor
 	{
 		private readonly InterceptedTypeGenerator generator;
@@ -37,27 +40,27 @@ namespace Interpose.Core.Interceptors
 
 			if (this.CanIntercept(typeToIntercept) == false)
 			{
-				throw new ArgumentException(nameof(typeToIntercept));
+				throw new ArgumentException("Type to intercept is not interceptable by this interceptor", nameof(typeToIntercept));
 			}
 
 			if (typeof(IInterceptionHandler).IsAssignableFrom(handlerType) == false)
 			{
-				throw new ArgumentException(nameof(handlerType));
+				throw new ArgumentException("Handler type is not an IInterceptionHandler", nameof(handlerType));
 			}
 
 			if (handlerType.IsPublic == false)
 			{
-				throw new ArgumentException(nameof(handlerType));
+				throw new ArgumentException("Handler type is not public", nameof(handlerType));
 			}
 
 			if ((handlerType.IsAbstract == true) || (handlerType.IsInterface == true))
 			{
-				throw new ArgumentException(nameof(handlerType));
+				throw new ArgumentException("Handler type is not a concrete class", nameof(handlerType));
 			}
 
 			if (handlerType.GetConstructor(Type.EmptyTypes) == null)
 			{
-				throw new ArgumentException(nameof(handlerType));
+				throw new ArgumentException("Handler type does not have a public parameterless constructor", nameof(handlerType));
 			}
 
 			return this.CreateType(typeToIntercept, handlerType);

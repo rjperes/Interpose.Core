@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace Interpose.Core.Interceptors
 {
+    /// <summary>
+    /// Intercepts instances implementing interfaces.
+    /// </summary>
 	public sealed class InterfaceInterceptor : IInstanceInterceptor
 	{
 		private readonly InterceptedTypeGenerator generator;
@@ -19,11 +22,11 @@ namespace Interpose.Core.Interceptors
 		{
 		}
 
-		public object Intercept(object instance, Type typeToIntercept, IInterceptionHandler handler)
+		public object Intercept(object target, Type typeToIntercept, IInterceptionHandler handler)
 		{
-			if (instance == null)
+			if (target == null)
 			{
-				throw new ArgumentNullException(nameof(instance));
+				throw new ArgumentNullException(nameof(target));
 			}
 
 			if (typeToIntercept == null)
@@ -36,24 +39,24 @@ namespace Interpose.Core.Interceptors
 				throw new ArgumentNullException(nameof(handler));
 			}
 
-			if (typeToIntercept.IsInstanceOfType(instance) == false)
+			if (typeToIntercept.IsInstanceOfType(target) == false)
 			{
-				throw new ArgumentNullException(nameof(instance));
+				throw new ArgumentException("Instance to intercept does not implement interception interface", nameof(target));
 			}
 
 			if (typeToIntercept.IsInterface == false)
 			{
-				throw new ArgumentNullException(nameof(typeToIntercept));
+				throw new ArgumentException("Type to intercept is not an interface", nameof(typeToIntercept));
 			}
 
-			if (this.CanIntercept(instance) == false)
+			if (this.CanIntercept(target) == false)
 			{
-				throw new ArgumentNullException(nameof(instance));
+				throw new ArgumentException("Type to intercept cannot be intercepted with this interceptor", nameof(target));
 			}
 
 			var interfaceProxy = this.generator.Generate(this, typeof(InterfaceProxy), null, typeToIntercept);
 
-			var newInstance = Activator.CreateInstance(interfaceProxy, this, handler, instance);
+			var newInstance = Activator.CreateInstance(interfaceProxy, this, handler, target);
 
 			return newInstance;
 		}
