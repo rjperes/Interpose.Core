@@ -56,7 +56,8 @@ namespace Interpose.Core.Tests
             var interceptor = new DynamicInterceptor();
             var handler = new ModifyResultHandler();
 
-            dynamic proxy = this.InstanceInterception(interceptor, instance, handler);
+            //dynamic proxy = this.InstanceInterception(interceptor, instance, handler);
+            dynamic proxy = instance.InterceptDynamic(handler);
 
             var result = proxy.MyMethod();
 

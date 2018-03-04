@@ -10,6 +10,11 @@ namespace Interpose.Core.Interceptors
 		public static readonly IInstanceInterceptor[] InstanceInterceptors = Interceptors.OfType<IInstanceInterceptor>().ToArray();
 		public static readonly ITypeInterceptor[] TypeInterceptors = Interceptors.OfType<ITypeInterceptor>().ToArray();
 
+        public static dynamic InterceptDynamic(this object instance, IInterceptionHandler handler)
+        {
+            return (dynamic) DynamicInterceptor.Instance.Intercept(instance, handler);
+        }
+
 		public static T Intercept<T, THandler>(this T instance) where T : class where THandler : IInterceptionHandler, new()
 		{
 			return Intercept<T>(instance, new THandler());
