@@ -5,16 +5,18 @@ Interpose.Core is a framework for doing dynamic interception of .NET code.
 Interpose.Core targets .NET Core 2.0.
 
 ## Concepts
-It supports the following interception mechanisms:
-
-* Virtual method: only virtual methods of non-sealed classes can be intercepted
-* Interface: any method declared in an interface can be intercepted
-* Dynamic: any method or property can be implemented as long as the object can be treated as dynamic
-
-These interception mechanisms all fall into one kind:
+Interception mechanisms all fall into one kind:
 
 * Type interception: a new type is generated on the fly; examples are virtual method interception
 * Instance interception: uses any existing instance; examples are interface and dynamic
+
+Interpose.Core supports the following interception mechanisms:
+
+* Virtual method (type): only virtual methods of non-sealed classes can be intercepted
+* Interface (instance): any method declared in an interface can be intercepted
+* Dynamic (instance): any method or property can be implemented as long as the object can be treated as dynamic
+* DispatchProxy (instance): any method declared in an interface can be intercepted
+
 
 ## Usage
 Instance interception (interface):

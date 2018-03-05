@@ -13,7 +13,7 @@ using System.Text;
 
 namespace Interpose.Core.Generators
 {
-    public class RoslynInterceptedTypeGenerator : InterceptedTypeGenerator
+    public sealed class RoslynInterceptedTypeGenerator : InterceptedTypeGenerator
     {
         internal static readonly InterceptedTypeGenerator Instance = new RoslynInterceptedTypeGenerator();
 

@@ -1,6 +1,7 @@
 ﻿using Interpose.Core.Handlers;
 using Interpose.Core.Interceptors;
 using Interpose.Core.Proxies;
+using Interpose.Core.Generators;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xunit;
@@ -58,6 +59,32 @@ namespace Interpose.Core.Tests
 
             //dynamic proxy = this.InstanceInterception(interceptor, instance, handler);
             dynamic proxy = instance.InterceptDynamic(handler);
+
+            var result = proxy.MyMethod();
+
+            Assert.Equal(20, result);
+        }
+
+        [Fact]
+        public void CanCacheInterfaceGeneration()
+        {
+            var interceptor = new InterfaceInterceptor();
+            var generator = new RoslynInterceptedTypeGenerator().AsCached();
+
+            var proxyType1 = generator.Generate(interceptor, typeof(MyType), typeof(ModifyResultHandler));
+            var proxyType2 = generator.Generate(interceptor, typeof(MyType), typeof(ModifyResultHandler));
+
+            Assert.Equal(proxyType1, proxyType2);
+        }
+
+        [Fact]
+        public void CanDoDispatchProxyInterception()
+        {
+            var instance = new MyType();
+            var interceptor = new DispatchProxyInterceptor();
+            var handler = new ModifyResultHandler();
+
+            var proxy = this.InstanceInterception(interceptor, instance, handler) as IMyType;
 
             var result = proxy.MyMethod();
 
