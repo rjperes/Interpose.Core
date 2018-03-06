@@ -5,7 +5,7 @@ using Interpose.Core.Interceptors;
 
 namespace Interpose.Core.Generators
 {
-    internal sealed class CachedTypeGenerator : InterceptedTypeGenerator
+    internal sealed class CachedTypeGenerator : InterceptedTypeGenerator, IDisposable
     {
         private readonly InterceptedTypeGenerator generator;
         private readonly Dictionary<string, Type> proxyTypes = new Dictionary<string, Type>();
@@ -49,6 +49,11 @@ namespace Interpose.Core.Generators
             this.proxyTypes.TryGetValue(key, out var proxyType);
 
             return proxyType;
+        }
+
+        public void Dispose()
+        {
+            this.proxyTypes.Clear();
         }
     }
 }

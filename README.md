@@ -1,7 +1,7 @@
 # Interpose.Core
 
 ## Introduction
-Interpose.Core is a framework for doing dynamic interception of .NET code.
+Interpose.Core is a framework for doing dynamic interception of .NET code (Aspect-Oriented Programming).
 Interpose.Core targets .NET Core 2.0.
 
 ## Concepts
@@ -16,6 +16,14 @@ Interpose.Core supports the following interception mechanisms:
 * Interface (instance): any method declared in an interface can be intercepted
 * Dynamic (instance): any method or property can be implemented as long as the object can be treated as dynamic
 * DispatchProxy (instance): any method declared in an interface can be intercepted
+
+As for the actual handlers, we have:
+
+* Custom handler, a type that implements IInterceptionHandler
+* Attributes-base handler
+* Registry-based handler, where you register an handler for a specific method
+* Event-based handler
+* Delegate-based handler
 
 
 ## Usage

@@ -78,6 +78,20 @@ namespace Interpose.Core.Tests
         }
 
         [Fact]
+        public void CanCallBaseImplementation()
+        {
+            var instance = new MyType();
+            var interceptor = new DispatchProxyInterceptor();
+            var handler = new DelegateInterceptionHandler(arg => arg.Proceed());
+
+            var proxy = this.InstanceInterception(interceptor, instance, handler) as IMyType;
+
+            var result = proxy.MyMethod();
+
+            Assert.Equal(0, result);
+        }
+
+        [Fact]
         public void CanDoDispatchProxyInterception()
         {
             var instance = new MyType();

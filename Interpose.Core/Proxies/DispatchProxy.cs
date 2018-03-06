@@ -32,9 +32,11 @@ namespace Interpose.Core.Proxies
 
         protected override object Invoke(MethodInfo targetMethod, object[] args)
         {
-            var arg = new InterceptionArgs(this.target, targetMethod, () =>
+            InterceptionArgs arg = null;
+            arg = new InterceptionArgs(this.target, targetMethod, () =>
             {
-                return targetMethod.Invoke(this.target, args);
+                arg.Result = targetMethod.Invoke(this.target, args);
+                return arg.Result;
             }, args);
             this.handler.Invoke(arg);
             return arg.Result;
