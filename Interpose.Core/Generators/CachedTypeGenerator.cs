@@ -19,11 +19,10 @@ namespace Interpose.Core.Generators
         {
             var type = this.Lookup(interceptor, baseType, additionalInterfaceTypes, handlerType);
 
-            if (type == null)
-            {
-                type = this.generator.Generate(interceptor, baseType, handlerType, additionalInterfaceTypes);
-                this.Register(interceptor, type, baseType, additionalInterfaceTypes, handlerType);
-            }
+            if (type != null) return type;
+            
+            type = this.generator.Generate(interceptor, baseType, handlerType, additionalInterfaceTypes);
+            this.Register(interceptor, type, baseType, additionalInterfaceTypes, handlerType);
 
             return type;
         }
@@ -35,7 +34,7 @@ namespace Interpose.Core.Generators
             this.proxyTypes[key] = type;
         }
 
-        private string GenerateKey(Type baseType, Type[] additionalInterfaceTypes, Type handlerType)
+        private string GenerateKey(Type baseType, IEnumerable<Type> additionalInterfaceTypes, Type handlerType)
         {
             var key = string.Join(";", new[] { baseType }.Concat(additionalInterfaceTypes).Concat(new[] { handlerType }).Select(x => x.FullName));
 
