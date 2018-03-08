@@ -1,15 +1,52 @@
 ﻿using Interpose.Core.Interceptors;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Interpose.Core.Handlers
 {
-	public sealed class AttributesInterceptionHandler : IInterceptionHandler
+	public sealed class AttributesInterceptionHandler : IInterceptionHandler, IDisposable
 	{
 		public static readonly IInterceptionHandler Instance = new AttributesInterceptionHandler();
 
-		public void Invoke(InterceptionArgs arg)
+        private readonly Dictionary<Type, IInterceptionHandler> handlers = new Dictionary<Type, IInterceptionHandler>();
+        private readonly IServiceProvider serviceProvider;
+
+        public AttributesInterceptionHandler()
+        {
+        }
+
+        public AttributesInterceptionHandler(IServiceProvider serviceProvider)
+        {
+            this.serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        }
+
+        public void Dispose()
+        {
+            this.handlers.Clear();
+        }
+
+        private IInterceptionHandler Instantiate(Type handlerType)
+        {
+            if (this.handlers.TryGetValue(handlerType, out var handler) == false)
+            {
+                if (this.serviceProvider == null)
+                {
+                    handler = Activator.CreateInstance(handlerType) as IInterceptionHandler;
+                }
+                else
+                {
+                    handler = ActivatorUtilities.CreateInstance(this.serviceProvider, handlerType) as IInterceptionHandler;
+                }
+
+                handlers[handlerType] = handler;
+            }
+
+            return handler;
+        }
+
+        public void Invoke(InterceptionArgs arg)
 		{
 			var attrs = arg
                 .Target
@@ -23,9 +60,9 @@ namespace Interpose.Core.Handlers
 			{
 				var handlerType = attr.InterceptionHandlerType;
 
-				if (handlerType != null)
+                if (handlerType != null)
 				{
-                    var handler = Activator.CreateInstance(handlerType) as IInterceptionHandler;
+                    var handler = this.Instantiate(handlerType);
 
 					if (handler != null)
 					{
