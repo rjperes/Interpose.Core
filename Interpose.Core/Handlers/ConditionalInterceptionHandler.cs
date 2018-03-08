@@ -3,7 +3,7 @@ using System;
 
 namespace Interpose.Core.Handlers
 {
-	internal sealed class ConditionalInterceptionHandler : IInterceptionHandler
+	public sealed class ConditionalInterceptionHandler : IInterceptionHandler
 	{
 		private readonly Func<InterceptionArgs, bool> condition;
 		private readonly IInterceptionHandler handler;

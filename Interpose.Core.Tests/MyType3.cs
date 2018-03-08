@@ -5,6 +5,7 @@
 		public virtual string MyProperty { get; set; }
 
 		[ConsoleLogInterception]
+        [ModifyResultInterception]
 		public virtual int MyMethod() => 0;
 	}
 }
