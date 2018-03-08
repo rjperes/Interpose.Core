@@ -164,6 +164,7 @@ namespace Interpose.Core.Generators
                 MetadataReference.CreateFromFile(typeof(Lazy<,>).Assembly.Location),      //System.Runtime
                 MetadataReference.CreateFromFile(typeof(Object).Assembly.Location),       //System.Private.CoreLib
                 MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),      //System.Console
+                MetadataReference.CreateFromFile(Assembly.Load("netstandard, Version=2.0.0.0").Location)
             };
 
             if (handlerType != null)
