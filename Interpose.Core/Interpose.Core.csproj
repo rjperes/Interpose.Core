@@ -17,7 +17,7 @@
     <RepositoryType>Git</RepositoryType>
     <NeutralLanguage>en</NeutralLanguage>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageTags>netcore,aop,interception</PackageTags>
+    <PackageTags>netcore,aop,interception,netstandard</PackageTags>
     <AssemblyVersion>1.4.0.0</AssemblyVersion>
   </PropertyGroup>
 
