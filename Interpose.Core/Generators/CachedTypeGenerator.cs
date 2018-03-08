@@ -37,7 +37,7 @@ namespace Interpose.Core.Generators
 
         private string GenerateKey(Type baseType, Type[] additionalInterfaceTypes, Type handlerType)
         {
-            var key = string.Join(';', new[] { baseType }.Concat(additionalInterfaceTypes).Concat(new[] { handlerType }).Select(x => x.FullName));
+            var key = string.Join(";", new[] { baseType }.Concat(additionalInterfaceTypes).Concat(new[] { handlerType }).Select(x => x.FullName));
 
             return key;
         }
