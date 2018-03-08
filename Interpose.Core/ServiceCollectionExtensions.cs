@@ -24,7 +24,7 @@ namespace Interpose.Core
         {
             AddInterceptedTypeGenerator(collection);
 
-            collection.AddSingleton<IInstanceInterceptor, InterfaceInterceptor>();
+            collection.AddSingleton<IInstanceInterceptor, InterfaceInterceptor>(sp => new InterfaceInterceptor(sp));
 
             return collection;
         }
