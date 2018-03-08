@@ -2,7 +2,7 @@
 
 ## Introduction
 Interpose.Core is a framework for doing dynamic interception of .NET code (Aspect-Oriented Programming).
-Interpose.Core targets .NET Core 2.0.
+Interpose.Core targets .NET Standard 2.0.
 
 ## Concepts
 Interception mechanisms all fall into one kind:
