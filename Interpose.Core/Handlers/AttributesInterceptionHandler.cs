@@ -65,18 +65,27 @@ namespace Interpose.Core.Handlers
 
             foreach (var attr in attrs)
 			{
-				var handlerType = attr.InterceptionHandlerType;
+                IInterceptionHandler handler = null;
 
-                if (handlerType != null)
-				{
-                    var handler = this.Instantiate(handlerType);
+                if (attr is IHandlerFactory)
+                {
+                    handler = (attr as IHandlerFactory).Instantiate(this.serviceProvider);
+                }
+                else
+                {
+                    var handlerType = attr.InterceptionHandlerType;
 
-					if (handler != null)
-					{
-						handler.Invoke(arg);
-					}
-				}
-			}
-		}
+                    if (handlerType != null)
+                    {
+                        handler = this.Instantiate(handlerType);
+                    }
+                }
+
+                if (handler != null)
+                {
+                    handler.Invoke(arg);
+                }
+            }
+        }
 	}
 }
