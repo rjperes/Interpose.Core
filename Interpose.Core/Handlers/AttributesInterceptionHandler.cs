@@ -48,15 +48,22 @@ namespace Interpose.Core.Handlers
 
         public void Invoke(InterceptionArgs arg)
 		{
-			var attrs = arg
-                .Target
-                .GetType()
+            var methodAttrs = arg
+                .Method
                 .GetCustomAttributes(true)
-                .Concat(arg.Method.GetCustomAttributes(true))
                 .OfType<InterceptionAttribute>()
                 .OrderBy(x => x.Order);
 
-			foreach (var attr in attrs)
+            var typeAttrs = arg
+                .Target
+                .GetType()
+                .GetCustomAttributes(true)
+                .OfType<InterceptionAttribute>()
+                .OrderBy(x => x.Order);
+
+            var attrs = methodAttrs.Concat(typeAttrs);
+
+            foreach (var attr in attrs)
 			{
 				var handlerType = attr.InterceptionHandlerType;
 

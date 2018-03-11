@@ -10,3 +10,5 @@
 /Interpose.Core/bin
 /Interpose.Core.Tests/bin/Release/netcoreapp2.0
 /Interpose.Core/build-nuget.cmd
+/Interpose.Core.Handlers/bin
+/Interpose.Core.Handlers/obj

@@ -5,11 +5,54 @@ using Interpose.Core.Generators;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xunit;
+using Microsoft.Extensions.Logging;
 
 namespace Interpose.Core.Tests
 {
 	public class InterceptionTests
 	{
+        [Fact]
+        public void CanRetry()
+        {
+            var instance = new ErrorOperation();
+            var interceptor = new InterfaceInterceptor();
+            var proxy = interceptor.Intercept(instance, typeof(IErrorOperation), new RetriesInterceptionHandler(3, TimeSpan.FromSeconds(5))) as IErrorOperation;
+            Assert.Throws<InvalidOperationException>(() =>
+                proxy.Throw()
+            );
+        }
+
+        [Fact]
+        public void CanMakeAsync()
+        {
+            var instance = new LongWait();
+            var interceptor = new DispatchProxyInterceptor();
+            var proxy = interceptor.Intercept(instance, typeof(ILongWait), new AsyncInterceptionHandler()) as ILongWait;
+            proxy.DoLongOperation();
+        }
+
+        [Fact]
+        public void CanLog()
+        {
+            var loggerFactory = new LoggerFactory();
+            loggerFactory.AddConsole();
+            loggerFactory.AddDebug();
+
+            var services = new ServiceCollection();
+            services.AddSingleton<ILoggerFactory>(loggerFactory);
+            services.AddInterfaceInterceptor();
+            services.AddLogging();
+            services.AddLoggingHandler(LogLevel.Critical);
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            var instance = new MyType();
+            var interceptor = serviceProvider.GetRequiredService<IInstanceInterceptor>();
+
+            var proxy = interceptor.Intercept(instance, typeof(IMyType), serviceProvider.GetRequiredService<LoggingInterceptionHandler>()) as IMyType;
+            proxy.MyMethod();
+        }
+
         [Fact]
         public void CanUseDependencyInjection()
         {

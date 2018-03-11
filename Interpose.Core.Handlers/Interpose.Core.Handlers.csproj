@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Ricardo Peres</Authors>
+    <Product>Interpose.Core</Product>
+    <Description>.NET Core interception framework</Description>
+    <Copyright>Copyright © Ricardo Peres 2018</Copyright>
+    <PackageLicenseUrl>https://github.com/rjperes/Interpose.Core/blob/master/lgpl.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/rjperes/Interpose.Core</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/rjperes/Interpose.Core</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>netcore,aop,interception,netstandard</PackageTags>
+    <Version>1.0.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Interpose.Core\Interpose.Core.csproj" />
+  </ItemGroup>
+
+</Project>
