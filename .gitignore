@@ -12,3 +12,4 @@
 /Interpose.Core/build-nuget.cmd
 /Interpose.Core.Handlers/bin
 /Interpose.Core.Handlers/obj
+/build-nuget.cmd

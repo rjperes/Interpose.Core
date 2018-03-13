@@ -9,10 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Interpose.Core.Tests", "Int
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E9B87D4E-9DCE-47D4-87BB-485F322EC29D}"
 	ProjectSection(SolutionItems) = preProject
+		build-nuget.cmd = build-nuget.cmd
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interpose.Core.Handlers", "Interpose.Core.Handlers\Interpose.Core.Handlers.csproj", "{AF86EA67-5958-42F1-AC91-B0C4050A10AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Interpose.Core.Handlers", "Interpose.Core.Handlers\Interpose.Core.Handlers.csproj", "{AF86EA67-5958-42F1-AC91-B0C4050A10AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
