@@ -1,16 +1,61 @@
-﻿using Interpose.Core.Handlers;
+﻿using Interpose.Core.Generators;
+using Interpose.Core.Handlers;
 using Interpose.Core.Interceptors;
 using Interpose.Core.Proxies;
-using Interpose.Core.Generators;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using Xunit;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
+using System.Transactions;
+using Xunit;
 
 namespace Interpose.Core.Tests
 {
-	public class InterceptionTests
+    public class InterceptionTests
 	{
+        [Fact]
+        public void CanValidate()
+        {
+            var instance = new Validatable();
+            var interceptor = new InterfaceInterceptor();
+            var proxy = interceptor.Intercept(instance, typeof(IValidatable), new ValidationInterceptionHandler()) as IValidatable;
+            Assert.Throws<ValidationException>(() => proxy.Try());
+        }
+
+        [Fact]
+        public void CanCreateTransactions()
+        {
+            var instance = new Calculator();
+            var interceptor = new InterfaceInterceptor();
+            var handler = new MultiInterceptionHandler();
+            var result = false;
+            handler.Handlers.Add(new TransactionInterceptionHandler(System.Transactions.TransactionScopeAsyncFlowOption.Enabled, System.Transactions.TransactionScopeOption.Required, TimeSpan.FromSeconds(10), System.Transactions.IsolationLevel.ReadCommitted));
+            handler.Handlers.Add(new DelegateInterceptionHandler(ctx =>
+            {
+                result = Transaction.Current != null;
+            }));
+            var proxy = interceptor.Intercept(instance, typeof(ICalculator), handler) as ICalculator;
+            proxy.Add(1, 2);
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void CanCache()
+        {
+            var instance = new Calculator();
+            var interceptor = new InterfaceInterceptor();
+            var proxy = interceptor.Intercept(instance, typeof(ICalculator), new CachingInterceptionHandler(new MemoryCache(Options.Create<MemoryCacheOptions>(new MemoryCacheOptions())), TimeSpan.FromSeconds(10))) as ICalculator;
+
+            proxy.Add(1, 2);
+
+            var timer = Stopwatch.StartNew();
+            proxy.Add(1, 2);
+            Assert.True(timer.Elapsed < TimeSpan.FromSeconds(5));
+        }
+
         [Fact]
         public void CanRetry()
         {
@@ -28,7 +73,9 @@ namespace Interpose.Core.Tests
             var instance = new LongWait();
             var interceptor = new DispatchProxyInterceptor();
             var proxy = interceptor.Intercept(instance, typeof(ILongWait), new AsyncInterceptionHandler()) as ILongWait;
+            var timer = Stopwatch.StartNew();
             proxy.DoLongOperation();
+            Assert.True(timer.Elapsed < TimeSpan.FromSeconds(5));
         }
 
         [Fact]

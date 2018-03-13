@@ -26,6 +26,18 @@ namespace Interpose.Core.Handlers
 			}
 		}
 
+        public MultiInterceptionHandler Add(IInterceptionHandler handler)
+        {
+            if (handler == null)
+            {
+                throw new ArgumentNullException(nameof(handler));
+            }
+
+            this.Handlers.Add(handler);
+
+            return this;
+        }
+
         public static MultiInterceptionHandler operator + (MultiInterceptionHandler multi, IInterceptionHandler handler)
         {
             if (multi == null)
@@ -33,12 +45,8 @@ namespace Interpose.Core.Handlers
                 throw new ArgumentNullException(nameof(multi));
             }
 
-            if (handler == null)
-            {
-                throw new ArgumentNullException(nameof(handler));
-            }
+            multi.Add(handler);
 
-            multi.Handlers.Add(handler);
             return multi;
         }
     }
