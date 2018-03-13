@@ -10,6 +10,12 @@
             tests.CanDoInterfaceInterception();
             tests.CanDoDynamicInterceptionWithAttributes();
             tests.CanDoDynamicInterceptionWithRegistry();
+            tests.CanCallBaseImplementation();
+            tests.CanCacheInterfaceGeneration();
+            tests.CanDoDispatchProxyInterception();
+            tests.CanLog();
+            tests.CanRetry();
+            tests.CanMakeAsync();
         }
     }
 }
