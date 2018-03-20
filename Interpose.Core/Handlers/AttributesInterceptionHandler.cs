@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Interpose.Core.Handlers
 {
@@ -46,22 +47,38 @@ namespace Interpose.Core.Handlers
             return handler;
         }
 
+        private IEnumerable<InterceptionAttribute> GetInterceptionAttributes(Type type)
+        {
+            if (type == typeof(object))
+            {
+                return new InterceptionAttribute[0];
+            }
+
+            return type
+                .GetCustomAttributes<InterceptionAttribute>(true);
+        }
+
+
         public void Invoke(InterceptionArgs arg)
 		{
             var methodAttrs = arg
                 .Method
-                .GetCustomAttributes(true)
-                .OfType<InterceptionAttribute>()
-                .OrderBy(x => x.Order);
+                .GetCustomAttributes<InterceptionAttribute>(true)
+                .OrderByDescending(x => x.Order);
 
-            var typeAttrs = arg
+            var typeAttrs = this.GetInterceptionAttributes(arg.Target.GetType())
+                .OrderByDescending(x => x.Order);
+
+            var interfaceAttrs = arg
                 .Target
                 .GetType()
-                .GetCustomAttributes(true)
-                .OfType<InterceptionAttribute>()
-                .OrderBy(x => x.Order);
+                .GetInterfaces()
+                .SelectMany(x => this.GetInterceptionAttributes(x))
+                .OrderByDescending(x => x.Order);
 
-            var attrs = methodAttrs.Concat(typeAttrs);
+            var attrs = methodAttrs
+                .Concat(typeAttrs)
+                .Concat(interfaceAttrs);
 
             foreach (var attr in attrs)
 			{

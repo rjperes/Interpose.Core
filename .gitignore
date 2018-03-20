@@ -13,3 +13,5 @@
 /Interpose.Core.Handlers/bin
 /Interpose.Core.Handlers/obj
 /build-nuget.cmd
+/Sample/bin
+/Sample/obj
