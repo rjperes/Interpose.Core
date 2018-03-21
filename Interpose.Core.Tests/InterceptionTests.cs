@@ -16,6 +16,7 @@ namespace Interpose.Core.Tests
 {
     public class InterceptionTests
 	{
+        #region Handlers library
         [Fact]
         public void CanValidate()
         {
@@ -99,6 +100,18 @@ namespace Interpose.Core.Tests
             var proxy = interceptor.Intercept(instance, typeof(IMyType), serviceProvider.GetRequiredService<LoggingInterceptionHandler>()) as IMyType;
             proxy.MyMethod();
         }
+
+        [Fact]
+        public void CanControlAccess()
+        {
+            var instance = new ProtectedClass();
+            var interceptor = new InterfaceInterceptor();
+            var proxy = interceptor.Intercept(instance, typeof(IProtectedClass), new AccessControlInterceptionHandler("")) as IProtectedClass;
+            Assert.Throws<InvalidOperationException>(() =>
+                proxy.TryAccess()
+            );
+        }
+        #endregion Handlers library
 
         [Fact]
         public void CanUseDependencyInjection()
