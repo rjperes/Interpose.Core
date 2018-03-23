@@ -9,10 +9,14 @@ namespace Interpose.Core.Handlers
     {
         private readonly TransactionScopeAsyncFlowOption asyncFlowOption;
         private readonly TransactionScopeOption scopeOption;
-        private readonly TimeSpan timeout;
+        private readonly TimeSpan timeout = TimeSpan.FromMinutes(1);
         private readonly IsolationLevel isolationLevel;
 
-        public TransactionInterceptionHandler(TransactionScopeAsyncFlowOption asyncFlowOption, TransactionScopeOption scopeOption, TimeSpan timeout, IsolationLevel isolationLevel)
+        public TransactionInterceptionHandler()
+        {
+        }
+
+        public TransactionInterceptionHandler(TimeSpan timeout, TransactionScopeAsyncFlowOption asyncFlowOption = TransactionScopeAsyncFlowOption.Suppress, TransactionScopeOption scopeOption = TransactionScopeOption.Required, IsolationLevel isolationLevel = IsolationLevel.Unspecified)
         {
             this.asyncFlowOption = asyncFlowOption;
             this.scopeOption = scopeOption;

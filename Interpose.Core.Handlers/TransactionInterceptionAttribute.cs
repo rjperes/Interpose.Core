@@ -8,7 +8,7 @@ namespace Interpose.Core.Handlers
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     public sealed class TransactionInterceptionAttribute : InterceptionAttribute, IHandlerFactory
     {
-        public TransactionInterceptionAttribute(TransactionScopeAsyncFlowOption asyncFlowOption, TransactionScopeOption scopeOption, TimeSpan timeout, IsolationLevel isolationLevel) : base(typeof(TransactionInterceptionHandler))
+        public TransactionInterceptionAttribute(TimeSpan timeout, TransactionScopeAsyncFlowOption asyncFlowOption = TransactionScopeAsyncFlowOption.Suppress, TransactionScopeOption scopeOption = TransactionScopeOption.Required, IsolationLevel isolationLevel = IsolationLevel.Unspecified) : base(typeof(TransactionInterceptionHandler))
         {
             this.AsyncFlowOption = asyncFlowOption;
             this.ScopeOption = scopeOption;
@@ -23,7 +23,7 @@ namespace Interpose.Core.Handlers
 
         public IInterceptionHandler Instantiate(IServiceProvider serviceProvider)
         {
-            return new TransactionInterceptionHandler(this.AsyncFlowOption, this.ScopeOption, this.Timeout, this.IsolationLevel);
+            return new TransactionInterceptionHandler(this.Timeout, this.AsyncFlowOption, this.ScopeOption, this.IsolationLevel);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Interpose.Core.Tests
             var interceptor = new InterfaceInterceptor();
             var handler = new MultiInterceptionHandler();
             var result = false;
-            handler.Handlers.Add(new TransactionInterceptionHandler(System.Transactions.TransactionScopeAsyncFlowOption.Enabled, System.Transactions.TransactionScopeOption.Required, TimeSpan.FromSeconds(10), System.Transactions.IsolationLevel.ReadCommitted));
+            handler.Handlers.Add(new TransactionInterceptionHandler(TimeSpan.FromSeconds(10), System.Transactions.TransactionScopeAsyncFlowOption.Enabled, System.Transactions.TransactionScopeOption.Required, System.Transactions.IsolationLevel.ReadCommitted));
             handler.Handlers.Add(new DelegateInterceptionHandler(ctx =>
             {
                 result = Transaction.Current != null;

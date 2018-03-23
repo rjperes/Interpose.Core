@@ -8,6 +8,7 @@ namespace Interpose.Core.Handlers
 
     public sealed class ValidationInterceptionHandler : IInterceptionHandler
     {
+        public static readonly IInterceptionHandler Instance = new ValidationInterceptionHandler();
         private readonly IServiceProvider serviceProvider;
 
         public ValidationInterceptionHandler()
@@ -21,6 +22,8 @@ namespace Interpose.Core.Handlers
 
         public void Invoke(InterceptionArgs arg)
         {
+            Array.ForEach(arg.Arguments, x => Validator.ValidateObject(x, new ValidationContext(x, this.serviceProvider, new Dictionary<object, object>())));
+
             Validator.ValidateObject(arg.Target, new ValidationContext(arg.Target, this.serviceProvider, new Dictionary<object, object>()));
         }
     }
