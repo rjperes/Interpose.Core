@@ -153,6 +153,8 @@ namespace Interpose.Core.Generators
 
             this.BuildMethods(baseType, additionalInterfaceTypes, builder, isInterface);
 
+            this.BuildEvents(baseType, additionalInterfaceTypes, builder, isInterface);
+
             this.BuildProperties(baseType, additionalInterfaceTypes, builder, isInterface);
 
             builder.Append("}\r\n");        //class
@@ -172,6 +174,7 @@ namespace Interpose.Core.Generators
                 MetadataReference.CreateFromFile(typeof(Object).Assembly.Location),       //System.Private.CoreLib
                 MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),      //System.Console
                 MetadataReference.CreateFromFile(Assembly.Load("System.Linq").Location),
+                MetadataReference.CreateFromFile(Assembly.Load("System.ObjectModel").Location),
                 MetadataReference.CreateFromFile(Assembly.Load("netstandard").Location)
             };
 
@@ -337,6 +340,25 @@ namespace Interpose.Core.Generators
             }
         }
 
+        private void BuildEvents(Type baseType, Type[] additionalInterfaceTypes, StringBuilder builder, bool isInterface)
+        {
+            var events = this.GetEvents(baseType, additionalInterfaceTypes);
+
+            foreach (var evt in events)
+            {
+                var visibility = GetMoreRelaxedVisibility(evt.AddMethod.Attributes, null);
+
+                if (isInterface == false)
+                {
+                    builder.AppendFormat("{0} event {1} {2};", visibility, evt.EventHandlerType.FullName, evt.Name);
+                }
+                else
+                {
+                    builder.AppendFormat("{0} event {1} {2} {{ add {{ (this.target as {3}).{2} += value; }} remove {{ (this.target as {3}).{2} -= value; }} }}", visibility, evt.EventHandlerType.FullName, evt.Name, evt.DeclaringType);
+                }
+            }
+        }
+
         private void BuildMethods(Type baseType, Type[] additionalInterfaceTypes, StringBuilder builder, bool isInterface)
         {
             var methods = this.GetMethods(baseType, additionalInterfaceTypes);
@@ -424,6 +446,21 @@ namespace Interpose.Core.Generators
             }
 
             return type.GetTypeInfo().DeclaredMethods.Where(x => (x.IsStatic == false) || (x.IsSpecialName == false)).Concat(GetMethods(type.BaseType));
+        }
+
+        private static IEnumerable<EventInfo> GetEvents(Type type)
+        {
+            if ((type == typeof(object)) || (type == null))
+            {
+                return Enumerable.Empty<EventInfo>();
+            }
+
+            return type.GetTypeInfo().DeclaredEvents.Concat(GetEvents(type.BaseType)).Concat(type.GetInterfaces().SelectMany(x => GetEvents(x)));
+        }
+
+        private IEnumerable<EventInfo> GetEvents(Type baseType, Type[] additionalInterfaceTypes)
+        {
+            return GetEvents(baseType).Concat(additionalInterfaceTypes.SelectMany(x => GetEvents(x))).Distinct();
         }
 
         private IEnumerable<MethodInfo> GetMethods(Type baseType, Type[] additionalInterfaceTypes)

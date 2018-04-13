@@ -7,7 +7,7 @@
     <PackageId>Interpose.Core</PackageId>
     <Authors>Ricardo Peres</Authors>
     <Company>Ricardo Peres</Company>
-    <Version>1.4.3.0</Version>
+    <Version>1.4.4.0</Version>
     <Description>.NET Core interception framework</Description>
     <Copyright>Copyright © Ricardo Peres 2018</Copyright>
     <PackageLicenseUrl>https://github.com/rjperes/Interpose.Core/blob/master/lgpl.txt</PackageLicenseUrl>
@@ -18,8 +18,8 @@
     <NeutralLanguage>en</NeutralLanguage>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageTags>netcore,aop,interception,netstandard</PackageTags>
-    <AssemblyVersion>1.4.3.0</AssemblyVersion>
-    <FileVersion>1.4.3.0</FileVersion>
+    <AssemblyVersion>1.4.4.0</AssemblyVersion>
+    <FileVersion>1.4.4.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

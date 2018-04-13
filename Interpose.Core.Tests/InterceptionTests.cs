@@ -18,6 +18,25 @@ namespace Interpose.Core.Tests
 	{
         #region Handlers library
         [Fact]
+        public void CanRaiseNotifyChangeEvents()
+        {
+            var instance = new Notifiable();
+            var interceptor = new InterfaceInterceptor();
+            var proxy = interceptor.Intercept(instance, typeof(INotifiable), new NotifyPropertyChangeHandler()) as INotifiable;
+
+            var propertyChangingFired = false;
+            var propertyChangedFired = false;
+
+            proxy.PropertyChanging += (sender, args) => propertyChangingFired = true;
+            proxy.PropertyChanged += (sender, args) => propertyChangedFired = true;
+
+            proxy.Name = "";
+
+            Assert.True(propertyChangingFired);
+            Assert.True(propertyChangedFired);
+        }
+
+        [Fact]
         public void CanValidate()
         {
             var instance = new Validatable();
