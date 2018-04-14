@@ -348,11 +348,7 @@ namespace Interpose.Core.Generators
             {
                 var visibility = GetMoreRelaxedVisibility(evt.AddMethod.Attributes, null);
 
-                if (isInterface == false)
-                {
-                    builder.AppendFormat("{0} event {1} {2};", visibility, evt.EventHandlerType.FullName, evt.Name);
-                }
-                else
+                if (isInterface == true)
                 {
                     builder.AppendFormat("{0} event {1} {2} {{ add {{ (this.target as {3}).{2} += value; }} remove {{ (this.target as {3}).{2} -= value; }} }}", visibility, evt.EventHandlerType.FullName, evt.Name, evt.DeclaringType);
                 }
