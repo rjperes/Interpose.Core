@@ -24,6 +24,11 @@ namespace Interpose.Core.Handlers
             this._action = action;
         }
 
+        public CallbackInterceptionHandler(object instance, string methodName, object key = null) : this(null, null, methodName, key)
+        {
+            this._instance = instance;
+        }
+
         public CallbackInterceptionHandler(MethodInfo method)
         {
             this._methodName = method.Name;
@@ -32,6 +37,8 @@ namespace Interpose.Core.Handlers
 
         private readonly IServiceProvider _serviceProvider;
         private readonly Action _action;
+        private readonly object _instance;
+
         private Type _type { get; }
         private string _methodName { get; }
         private object _key { get; }
@@ -44,11 +51,14 @@ namespace Interpose.Core.Handlers
             {
                 var method = this._type.GetMethod(this._methodName, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Static);
                 object[] parameters = (method.GetParameters().Length == 0) ? null : new[] { this._key };
-                object instance = null;
+                var instance = this._instance;
 
-                if (method.IsStatic == false)
+                if (instance == null)
                 {
-                    instance = (this._serviceProvider == null) ? Activator.CreateInstance(this._type) : ActivatorUtilities.CreateInstance(this._serviceProvider, this._type);
+                    if (method.IsStatic == false)
+                    {
+                        instance = (this._serviceProvider == null) ? Activator.CreateInstance(this._type) : ActivatorUtilities.CreateInstance(this._serviceProvider, this._type);
+                    }
                 }
 
                 method.Invoke(instance, parameters);
