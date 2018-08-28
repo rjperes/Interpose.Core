@@ -278,5 +278,17 @@ namespace Interpose.Core.Tests
             var result = myProxy.MyMethod();
             Assert.Equal(20, result);
         }
-	}
+
+        [Fact]
+        public void CanEnforceTimeout()
+        {
+            var instance = new LongWait();
+            var interceptor = new InterfaceInterceptor();
+            var handler = new TimeoutInterceptionHandler(3);
+
+            var proxy = this.InstanceInterception(interceptor, instance, handler) as ILongWait;
+
+            Assert.Throws<TimeoutException>(() => proxy.DoLongOperation());
+        }
+    }
 }
