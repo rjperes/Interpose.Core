@@ -290,5 +290,20 @@ namespace Interpose.Core.Tests
 
             Assert.Throws<TimeoutException>(() => proxy.DoLongOperation());
         }
+
+        [Fact]
+        public void CanDoCallback()
+        {
+            var called = false;
+            var instance = new LongWait();
+            var interceptor = new InterfaceInterceptor();
+            var handler = new CallbackInterceptionHandler(() => called = true);
+
+            var proxy = this.InstanceInterception(interceptor, instance, handler) as ILongWait;
+
+            proxy.DoLongOperation();
+
+            Assert.True(called);
+        }
     }
 }
