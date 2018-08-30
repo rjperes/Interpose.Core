@@ -38,5 +38,15 @@ namespace Interpose.Core.Handlers
         {
             return interceptor.Intercept<T>(target, ValidationInterceptionHandler.Instance);
         }
+
+        public static T InterceptWithTimeout<T>(this IInstanceInterceptor interceptor, T target, TimeSpan timeout)
+        {
+            return interceptor.Intercept<T>(target, new TimeoutInterceptionHandler(timeout));
+        }
+
+        public static T InterceptWithCallback<T>(this IInstanceInterceptor interceptor, T target, Action callback)
+        {
+            return interceptor.Intercept<T>(target, new CallbackInterceptionHandler(callback));
+        }
     }
 }
