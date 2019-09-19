@@ -5,7 +5,7 @@
     <Authors>Ricardo Peres</Authors>
     <Product>Interpose.Core</Product>
     <Description>.NET Core interception framework</Description>
-    <Copyright>Copyright © Ricardo Peres 2018</Copyright>
+    <Copyright>Copyright © Ricardo Peres 2019</Copyright>
     <PackageLicenseUrl>https://github.com/rjperes/Interpose.Core/blob/master/lgpl.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/rjperes/Interpose.Core</PackageProjectUrl>
     <RepositoryUrl>https://github.com/rjperes/Interpose.Core</RepositoryUrl>

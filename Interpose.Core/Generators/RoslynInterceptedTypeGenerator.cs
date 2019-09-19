@@ -1,15 +1,15 @@
-﻿using Interpose.Core.Handlers;
-using Interpose.Core.Interceptors;
-using Interpose.Core.Proxies;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Text;
+using Interpose.Core.Handlers;
+using Interpose.Core.Interceptors;
+using Interpose.Core.Proxies;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace Interpose.Core.Generators
 {
