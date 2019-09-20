@@ -17,6 +17,11 @@ Interpose.Core supports the following interception mechanisms:
 * Dynamic (instance): any method or property can be implemented as long as the object can be treated as dynamic
 * DispatchProxy (instance): any method declared in an interface can be intercepted
 
+You can use one of the following generators:
+
+* CodeDOM generator
+* Roslyn generator
+
 As for the actual handlers, we have:
 
 * Custom handler, a type that implements IInterceptionHandler
